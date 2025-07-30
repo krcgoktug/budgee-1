@@ -1,7 +1,6 @@
 package com.example.budgee.presentation
 import com.squareup.moshi.JsonClass
 
-// --- REQUEST MODELS ---
 
 @JsonClass(generateAdapter = true)
 data class ChatRequest(
@@ -16,7 +15,6 @@ data class ApiMessage(
 )
 
 
-// --- RESPONSE MODELS ---
 
 @JsonClass(generateAdapter = true)
 data class ChatResponse(

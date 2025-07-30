@@ -26,25 +26,23 @@ class MainActivity : ComponentActivity() {
         setTheme(android.R.style.Theme_DeviceDefault)
 
         setContent {
-            WearApp("Android")
+            WearApp()
         }
     }
 }
 
 @Composable
-fun WearApp(greetingName: String) {
+fun WearApp() {
     BudgeeTheme {
         val navController = rememberSwipeDismissableNavController()
         SwipeDismissableNavHost(
             navController = navController,
-            startDestination = "welcome" // The first screen to show
+            startDestination = "welcome"
         ) {
-            // Route for the Welcome Screen
             composable("welcome") {
                 BudgeeWelcomeScreen(navController = navController)
             }
 
-            // Route for the Main Chat Screen
             composable("main_chat") {
                 MainChatScreen(
                     navController
@@ -61,5 +59,5 @@ fun WearApp(greetingName: String) {
 @Preview(device = WearDevices.SMALL_ROUND, showSystemUi = true)
 @Composable
 fun DefaultPreview() {
-    WearApp("Preview Android")
+    WearApp()
 }

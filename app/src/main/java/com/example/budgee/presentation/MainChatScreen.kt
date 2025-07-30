@@ -25,7 +25,6 @@ import com.example.budgee.R
 fun MainChatScreen(navController: NavController, userName: String = "Azra") {
     val listState = rememberScalingLazyListState()
 
-    // Navigation logic remains the same
     LaunchedEffect(listState.isScrollInProgress) {
         if (!listState.isScrollInProgress) {
             val lastVisibleItem = listState.layoutInfo.visibleItemsInfo.lastOrNull()
@@ -50,21 +49,17 @@ fun MainChatScreen(navController: NavController, userName: String = "Azra") {
                 .background(Color.Black),
             state = listState,
             horizontalAlignment = Alignment.CenterHorizontally,
-            // 1. SET OVERALL SPACING BETWEEN ITEMS HERE
             verticalArrangement = Arrangement.spacedBy(12.dp),
-            // 2. ADD PADDING TO THE TOP AND BOTTOM OF THE WHOLE LIST
             contentPadding = PaddingValues(top = 20.dp, bottom = 40.dp)
         ) {
 
-            // Item 1: The Row with the chat bubble and robot
-            // The initial Spacer is no longer needed because of contentPadding
+
             item {
                 Row(
                     modifier = Modifier.fillMaxWidth(0.9f),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
-                    // Chat Bubble
                     Box(
                         modifier = Modifier
                             .clip(RoundedCornerShape(20.dp))
@@ -79,7 +74,6 @@ fun MainChatScreen(navController: NavController, userName: String = "Azra") {
                         )
                     }
 
-                    // Robot Image
                     Image(
                         painter = painterResource(id = R.drawable.robot_character),
                         contentDescription = "Robot character waving",
@@ -95,7 +89,6 @@ fun MainChatScreen(navController: NavController, userName: String = "Azra") {
                     fontSize = 22.sp,
                     fontWeight = FontWeight.Bold,
                     textAlign = TextAlign.Center,
-                    // 3. REMOVED THE LARGE PADDING. The Arrangement handles the spacing now.
                     modifier = Modifier.padding(horizontal = 16.dp)
                 )
             }

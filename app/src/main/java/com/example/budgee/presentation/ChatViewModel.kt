@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-private const val API_KEY="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"
+private const val API_KEY="sk-4d1b2f3c-0e8a-4b5c-9f6d-123456789abc"
 
 class ChatViewModel : ViewModel() {
 
@@ -24,15 +24,13 @@ class ChatViewModel : ViewModel() {
     )
     val messages: StateFlow<List<ChatMessage>> = _messages.asStateFlow()
 
-    // --- FIX 1: ADD LOADING STATE ---
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
     fun sendMessage(text: String) {
-        // Don't send a new message if we are already waiting for a response.
         if (_isLoading.value) return
 
-        _isLoading.value = true // Set loading to true
+        _isLoading.value = true
         _messages.update { it + ChatMessage(text, Sender.USER) }
 
         viewModelScope.launch {
@@ -50,8 +48,6 @@ class ChatViewModel : ViewModel() {
                 Log.e("ChatViewModel", "API call failed", e)
                 _messages.update { it + ChatMessage("Sorry, an error occurred.", Sender.BOT) }
             } finally {
-                // --- THIS IS CRUCIAL ---
-                // Always set loading back to false, even if an error occurred.
                 _isLoading.value = false
             }
         }

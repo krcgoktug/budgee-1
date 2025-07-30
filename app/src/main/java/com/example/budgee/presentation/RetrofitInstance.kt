@@ -10,7 +10,6 @@ object RetrofitInstance {
 
     private const val BASE_URL = "https://openrouter.ai/api/v1/"
 
-    // For logging network requests and responses, helps with debugging
     private val loggingInterceptor = HttpLoggingInterceptor().apply {
         level = HttpLoggingInterceptor.Level.BODY
     }
@@ -19,19 +18,16 @@ object RetrofitInstance {
         .addInterceptor(loggingInterceptor)
         .build()
 
-    // Moshi object to convert JSON to Kotlin
     private val moshi = Moshi.Builder()
         .add(KotlinJsonAdapterFactory())
         .build()
 
-    // The single Retrofit instance
     private val retrofit = Retrofit.Builder()
         .baseUrl(BASE_URL)
         .client(client)
         .addConverterFactory(MoshiConverterFactory.create(moshi))
         .build()
 
-    // Create a lazy-initialized instance of our API service
     val api: OpenRouterApiService by lazy {
         retrofit.create(OpenRouterApiService::class.java)
     }

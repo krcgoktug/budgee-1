@@ -10,5 +10,5 @@ interface OpenRouterApiService {
     suspend fun postChatCompletion(
         @Header("Authorization") apiKey: String,
         @Body requestBody: ChatRequest
-    ): ChatResponse // Retrofit will automatically parse the JSON response into this object
+    ): ChatResponse
 }

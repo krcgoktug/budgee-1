@@ -1,15 +1,26 @@
 package com.example.budgee.presentation
 
 import android.app.Activity
-import android.content.Intent
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -23,10 +34,19 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.app.RemoteInput
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.wear.compose.material.*
+import androidx.wear.compose.material.Chip
+import androidx.wear.compose.material.ChipDefaults
+import androidx.wear.compose.material.CircularProgressIndicator
+import androidx.wear.compose.material.Icon
+import androidx.wear.compose.material.PositionIndicator
+import androidx.wear.compose.material.Scaffold
+import androidx.wear.compose.material.ScalingLazyColumn
+import androidx.wear.compose.material.Text
+import androidx.wear.compose.material.TimeText
+import androidx.wear.compose.material.items
+import androidx.wear.compose.material.rememberScalingLazyListState
 import androidx.wear.input.RemoteInputIntentHelper
 import com.example.budgee.R
-import kotlinx.coroutines.launch
 
 private const val TEXT_INPUT_KEY = "text_input"
 
@@ -65,8 +85,6 @@ fun ChatScreen(
                     .setLabel("Your question")
                     .build()
             )
-            // --- THE FINAL, CORRECTED LINE ---
-            // Pass the List directly, as required by your specific library version.
             RemoteInputIntentHelper.putRemoteInputsExtra(this, remoteInputs)
         }
     }
@@ -120,7 +138,6 @@ fun ChatScreen(
     }
 }
 
-// ... (The rest of your file: UserMessageBubble, BotMessageBubble, Preview) remains the same.
 @Composable
 fun UserMessageBubble(text: String) {
     Row(
@@ -149,7 +166,7 @@ fun UserMessageBubble(text: String) {
             horizontalArrangement = Arrangement.spacedBy(4.dp)
         ) {
             Image(
-                painter = painterResource(id = R.drawable.ic_microphone), // Make sure you have this drawable
+                painter = painterResource(id = R.drawable.ic_microphone),
                 contentDescription = "Voice message icon",
                 modifier = Modifier.size(16.dp),
                 colorFilter = ColorFilter.tint(Color(0xFF558B2F))
