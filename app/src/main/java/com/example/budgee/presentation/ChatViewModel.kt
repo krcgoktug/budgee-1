@@ -9,7 +9,10 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
+private const val API_KEY="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"
+
 class ChatViewModel : ViewModel() {
+
 
     private val _messages = MutableStateFlow(
         listOf(
@@ -21,32 +24,35 @@ class ChatViewModel : ViewModel() {
     )
     val messages: StateFlow<List<ChatMessage>> = _messages.asStateFlow()
 
+    // --- FIX 1: ADD LOADING STATE ---
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
+
     fun sendMessage(text: String) {
-        // Add user message to the UI immediately
+        // Don't send a new message if we are already waiting for a response.
+        if (_isLoading.value) return
+
+        _isLoading.value = true // Set loading to true
         _messages.update { it + ChatMessage(text, Sender.USER) }
 
-        // Launch a coroutine to make the network request
         viewModelScope.launch {
             try {
-                // 1. Prepare the request
                 val request = ChatRequest(
                     messages = listOf(ApiMessage(role = "user", content = text))
                 )
                 val apiKey = "Bearer $API_KEY"
-
-                // 2. Make the API call
                 val response = RetrofitInstance.api.postChatCompletion(apiKey, request)
-
-                // 3. Extract the bot's reply from the response
-                val botReplyText = response.choices.firstOrNull()?.message?.content ?: "Sorry, I had trouble thinking."
-
-                // 4. Add the bot's reply to the UI
+                val botReplyText = response.choices.firstOrNull()?.message?.content
+                    ?: "Sorry, I had trouble thinking."
                 _messages.update { it + ChatMessage(botReplyText, Sender.BOT) }
 
             } catch (e: Exception) {
-                // If anything goes wrong, log the error and show a message to the user
                 Log.e("ChatViewModel", "API call failed", e)
                 _messages.update { it + ChatMessage("Sorry, an error occurred.", Sender.BOT) }
+            } finally {
+                // --- THIS IS CRUCIAL ---
+                // Always set loading back to false, even if an error occurred.
+                _isLoading.value = false
             }
         }
     }

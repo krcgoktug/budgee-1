@@ -6,19 +6,10 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.material.icons.Icons
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -32,21 +23,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.app.RemoteInput
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.wear.compose.material.Chip
-import androidx.wear.compose.material.Icon
-import androidx.wear.compose.material.PositionIndicator
-import androidx.wear.compose.material.Scaffold
-import androidx.wear.compose.material.ScalingLazyColumn
-import androidx.wear.compose.material.Text
-import androidx.wear.compose.material.TimeText
-import androidx.wear.compose.material.items
-import androidx.wear.compose.material.rememberScalingLazyListState
+import androidx.wear.compose.material.*
 import androidx.wear.input.RemoteInputIntentHelper
 import com.example.budgee.R
+import kotlinx.coroutines.launch
 
 private const val TEXT_INPUT_KEY = "text_input"
-const val API_KEY = "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"
-
 
 @Composable
 fun ChatScreen(
@@ -54,6 +36,9 @@ fun ChatScreen(
 ) {
     val listState = rememberScalingLazyListState()
     val messages by chatViewModel.messages.collectAsState()
+    val isLoading by chatViewModel.isLoading.collectAsState()
+
+    var launchRemoteInput by remember { mutableStateOf(false) }
 
     LaunchedEffect(messages.size) {
         if (messages.isNotEmpty()) {
@@ -67,22 +52,30 @@ fun ChatScreen(
         if (result.resultCode == Activity.RESULT_OK) {
             val results = result.data?.let { RemoteInput.getResultsFromIntent(it) }
             val newText = results?.getCharSequence(TEXT_INPUT_KEY)?.toString()
-
             if (!newText.isNullOrEmpty()) {
                 chatViewModel.sendMessage(newText)
             }
         }
     }
 
-    val textInputIntent: Intent = RemoteInputIntentHelper.createActionRemoteInputIntent().apply {
-        val remoteInputs: List<android.app.RemoteInput> = listOf(
-            android.app.RemoteInput.Builder(TEXT_INPUT_KEY)
-                .setLabel("Your question")
-                .build()
-        )
-        // *** FIX: Removed the incorrect .toList() at the end ***
-        // This method requires an Array, not a List.
-        RemoteInputIntentHelper.putRemoteInputsExtra(this, remoteInputs.toTypedArray().toList())
+    val textInputIntent = remember {
+        RemoteInputIntentHelper.createActionRemoteInputIntent().apply {
+            val remoteInputs: List<android.app.RemoteInput> = listOf(
+                android.app.RemoteInput.Builder(TEXT_INPUT_KEY)
+                    .setLabel("Your question")
+                    .build()
+            )
+            // --- THE FINAL, CORRECTED LINE ---
+            // Pass the List directly, as required by your specific library version.
+            RemoteInputIntentHelper.putRemoteInputsExtra(this, remoteInputs)
+        }
+    }
+
+    LaunchedEffect(launchRemoteInput) {
+        if (launchRemoteInput) {
+            textInputLauncher.launch(textInputIntent)
+            launchRemoteInput = false
+        }
     }
 
     Scaffold(
@@ -108,18 +101,26 @@ fun ChatScreen(
             contentAlignment = Alignment.BottomCenter
         ) {
             Chip(
-                label = { Text("Reply") },
-                icon = { Icon(painterResource(R.drawable.ic_microphone), "microphone") },
-                onClick = { textInputLauncher.launch(textInputIntent) },
+                label = { Text(if (isLoading) "Thinking..." else "Reply") },
+                icon = {
+                    if (isLoading) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(ChipDefaults.IconSize),
+                            strokeWidth = 2.dp
+                        )
+                    } else {
+                        Icon(painterResource(R.drawable.ic_microphone), "microphone")
+                    }
+                },
+                enabled = !isLoading,
+                onClick = { launchRemoteInput = true },
                 modifier = Modifier.padding(bottom = 16.dp)
             )
         }
     }
 }
 
-// UserMessageBubble, BotMessageBubble, and Preview composables remain the same.
-// ... (paste the rest of your unchanged code here)
-
+// ... (The rest of your file: UserMessageBubble, BotMessageBubble, Preview) remains the same.
 @Composable
 fun UserMessageBubble(text: String) {
     Row(
