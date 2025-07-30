@@ -1,7 +1,9 @@
 package com.example.budgee.presentation
 
+import android.widget.ImageButton
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.*
@@ -30,9 +32,13 @@ fun MainChatScreen(navController: NavController, userName: String = "Azra") {
             val lastVisibleItem = listState.layoutInfo.visibleItemsInfo.lastOrNull()
             val isAtBottom = lastVisibleItem != null && lastVisibleItem.index == listState.layoutInfo.totalItemsCount - 1
             if (isAtBottom) {
-                navController.navigate("action_screen")
+                navController.navigate("menu_screen")
             }
         }
+    }
+
+    LaunchedEffect(Unit) { // 'Unit' anahtarı, bu efektin sadece bir kere çalışmasını sağlar
+        listState.animateScrollToItem(0) // En üste kaydır
     }
 
     Scaffold(
@@ -50,21 +56,22 @@ fun MainChatScreen(navController: NavController, userName: String = "Azra") {
             state = listState,
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(12.dp),
-            contentPadding = PaddingValues(top = 20.dp, bottom = 40.dp)
+            contentPadding = PaddingValues(top = 40.dp, bottom = 40.dp)
         ) {
 
 
             item {
                 Row(
-                    modifier = Modifier.fillMaxWidth(0.9f),
+                    modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
                     Box(
                         modifier = Modifier
-                            .clip(RoundedCornerShape(20.dp))
+                            .clip(RoundedCornerShape(24.dp))
                             .background(Color(0xFFA9D1F7))
-                            .padding(horizontal = 12.dp, vertical = 8.dp)
+                            .padding(horizontal = 8.dp, vertical = 8.dp)
+                            .size(64.dp)
                     ) {
                         Text(
                             text = "Nasıl yardımcı olabilirim?",
@@ -77,8 +84,12 @@ fun MainChatScreen(navController: NavController, userName: String = "Azra") {
                     Image(
                         painter = painterResource(id = R.drawable.robot_character),
                         contentDescription = "Robot character waving",
-                        modifier = Modifier.size(70.dp)
+                        modifier = Modifier.size(48.dp).clickable {
+                            navController.navigate("action_screen")
+                        }
                     )
+
+
                 }
             }
 
@@ -95,7 +106,7 @@ fun MainChatScreen(navController: NavController, userName: String = "Azra") {
 
             item {
                 Text(
-                    "Devam etmek için aşağı kaydırın",
+                    "Menüye dönmek için kaydır",
                     color = Color.Gray,
                     fontSize = 12.sp
                 )

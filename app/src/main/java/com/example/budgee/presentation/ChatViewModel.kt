@@ -9,17 +9,15 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-private const val API_KEY="sk-4d1b2f3c-0e8a-4b5c-9f6d-123456789abc"
+
+private const val API_KEY="sk-or-v1-05e302e77"
 
 class ChatViewModel : ViewModel() {
 
 
     private val _messages = MutableStateFlow(
         listOf(
-            ChatMessage("Merhaba Budgee, sana bir sorum var.", Sender.USER),
-            ChatMessage("Tabi Azra. Sorun nedir?", Sender.BOT),
-            ChatMessage("Toplam bakiyeme nasıl ulaşacağım?", Sender.USER),
-            ChatMessage("Menü > Bütçe Durumu kısmından bakiyeni görebilirsin.", Sender.BOT)
+            ChatMessage("Merhaba sana nasıl yardımcı olabilirim ?", Sender.BOT)
         )
     )
     val messages: StateFlow<List<ChatMessage>> = _messages.asStateFlow()
@@ -36,10 +34,17 @@ class ChatViewModel : ViewModel() {
         viewModelScope.launch {
             try {
                 val request = ChatRequest(
-                    messages = listOf(ApiMessage(role = "user", content = text))
-                )
-                val apiKey = "Bearer $API_KEY"
-                val response = RetrofitInstance.api.postChatCompletion(apiKey, request)
+                    messages = listOf(
+                        ApiMessage(role = "user", content = text),
+                        ApiMessage(role = "system", content = "Sen Denizbank Budgee uygulaması botusun. " +
+                                "Bankacılık işlemleri dışındaki konularda yardımcı olamıyorsun." +
+                                "Verdiğin cevapları olabildiğince kısa ve açık tut. Kullanıcıya yardımcı ol." +
+                                " Kullanıcı uygunsuz ifadeler kullanursa kibar bir dille uyar ve konuyu kapat. " +
+                                "Ve verdiğin cevapları lütfen kısa tut. Eğer konu çok kompleks değilse 12-20 kelime arasında cevap vermeye çalış." +
+                                "eğer kullanıcı hesaplarına gitmek istiyorsa bana "
+                    )
+                ))
+                val response = RetrofitInstance.api.postChatCompletion("Bearer $API_KEY", request)
                 val botReplyText = response.choices.firstOrNull()?.message?.content
                     ?: "Sorry, I had trouble thinking."
                 _messages.update { it + ChatMessage(botReplyText, Sender.BOT) }

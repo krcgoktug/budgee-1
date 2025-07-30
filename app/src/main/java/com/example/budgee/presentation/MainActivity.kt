@@ -5,12 +5,14 @@
 
 package com.example.budgee.presentation
 
+import WatchMenuDisplayOnly
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.wear.compose.material.Text
 import androidx.wear.compose.navigation.SwipeDismissableNavHost
 import androidx.wear.compose.navigation.composable
 import androidx.wear.compose.navigation.rememberSwipeDismissableNavController
@@ -52,6 +54,24 @@ fun WearApp() {
             composable("action_screen") {
                 ChatScreen()
             }
+
+            composable("menu_screen") {
+                WatchMenuDisplayOnly(
+                    navController
+                )
+            }
+
+            composable("budget_summary") {
+                BudgetStatusScreen()
+            }
+
+            composable("budget_history") {
+                DailySpendingScreenWear()
+            }
+            composable("notification"){
+                NotificationsScreenWear()
+            }
+
         }
     }
 }

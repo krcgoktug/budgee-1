@@ -64,6 +64,7 @@ fun ChatScreen(
         if (messages.isNotEmpty()) {
             listState.animateScrollToItem(messages.size - 1)
         }
+
     }
 
     val textInputLauncher = rememberLauncherForActivityResult(
