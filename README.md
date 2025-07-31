@@ -40,7 +40,7 @@
 ## 📦 Kurulum
 
 ```bash
-git clone https://github.com/kullaniciAdi/budgee.git
+git clone https://github.com/krcgoktug/budgee-1.git
 cd budgee
 npm install
 npm start
