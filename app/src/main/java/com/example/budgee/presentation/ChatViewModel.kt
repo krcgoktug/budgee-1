@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 
-private const val API_KEY="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   "
+private const val API_KEY="..."
 
 class ChatViewModel : ViewModel() {
 
